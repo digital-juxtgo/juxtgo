@@ -1,0 +1,56 @@
+{% extends "admin/pages/list.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} | JuxtGo OS{% endblock %}
+{% block page_title %}{{ page_title }}{% endblock %}
+{% block page_breadcrumbs %}<li class="breadcrumb-item active">Role & Access</li>{% endblock %}
+{% block add_url %}{% url 'core:permissions:role_create' %}{% endblock %}
+
+{% block list_table_head %}
+    <thead>
+        <tr>
+            <th style="width:10px">#</th>
+            <th>Created</th>
+            <th>Role</th>
+            <th>Display Name</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+{% endblock %}
+
+{% block list_table_body %}
+    {% for role in roles %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ role.created_at }}</td>
+            <td>{{ role.name }}</td>
+            <td>{{ role.display_name }}</td>
+            <td>{{ role.description|truncatechars:50 }}</td>
+            <td>
+                {% if role.is_system_role %}
+                    <span class="badge badge-primary">System</span>
+                {% else %}
+                    <span class="badge badge-success">Active</span>
+                {% endif %}
+            </td>
+            <td class="text-center">
+                <a href="{% url 'core:permissions:role_edit' role.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+                {% if not role.is_system_role %}
+                    <form method="post" action="{% url 'core:permissions:role_delete' role.id %}" onsubmit="return confirm('Delete this role?');" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="7" class="text-center">No roles found.</td></tr>
+    {% endfor %}
+{% endblock %}
+
+{% block page_content %}
+    {{ block.super }}
+    {% include "permissions/roles/_role_modal.html" %}
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "admin/layouts/page.html" %}
+
+{% load static identity_filters %}
+
+{% block title %}My Profile | JuxtGo OS{% endblock %}
+
+{% block page_title %}My Profile{% endblock %}
+
+{% block page_breadcrumbs %}<li class="breadcrumb-item active">My Profile</li>{% endblock %}
+
+{% block page_content %}
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card card-primary card-outline">
+        <div class="card-body box-profile">
+          <div class="text-center">
+            <img class="profile-user-img img-fluid img-circle" src="{{ request.user|avatar_url }}" alt="User profile picture" style="width: 100px; height: 100px; object-fit: cover;" />
+          </div>
+          <h3 class="profile-username text-center">{{ profile.get_full_name }}</h3>
+          <p class="text-muted text-center">{{ request.user.groups.first.identity_role.display_name|default:"No Role" }}</p>
+          <a href="{% url 'core:identity:logout' %}" class="btn btn-default btn-block"><i class="fas fa-sign-out-alt mr-2"></i> Sign Out</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-header p-2">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link active" href="#settings" data-toggle="tab">Settings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#password" data-toggle="tab">Change Password</a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content">
+            <div class="active tab-pane" id="settings">
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group row">
+                  <label for="first_name" class="col-sm-3 col-form-label">First Name</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" name="first_name" value="{{ profile.first_name }}" />
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="last_name" class="col-sm-3 col-form-label">Last Name</label>
+                  <div class="col-sm-9">
+                    <input type="text" class="form-control" name="last_name" value="{{ profile.last_name }}" />
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="bio" class="col-sm-3 col-form-label">Bio</label>
+                  <div class="col-sm-9">
+                    <textarea class="form-control summernote" name="bio" rows="3">{{ profile.bio }}</textarea>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">Avatar</label>
+                  <div class="col-sm-9">
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="avatar" name="avatar" accept="image/*" />
+                      <label class="custom-file-label" for="avatar">Choose file</label>
+                    </div>
+                    <div class="mt-2">
+                      <img id="avatar-preview" src="{% if profile.avatar %}{{ profile.avatar.url }}{% else %}{% static 'adminlte/img/default-avatar.png' %}{% endif %}" style="max-width:150px;height:auto;" />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="offset-sm-3 col-sm-9">
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="tab-pane" id="password">
+              <form method="post" action="{% url 'core:identity:password_change' %}">
+                {% csrf_token %}
+                <div class="form-group row">
+                  <label for="old_password" class="col-sm-3 col-form-label">Current Password</label>
+                  <div class="col-sm-9">
+                    <input type="password" class="form-control" name="old_password" required />
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="new_password1" class="col-sm-3 col-form-label">New Password</label>
+                  <div class="col-sm-9">
+                    <input type="password" class="form-control" name="new_password1" required />
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="new_password2" class="col-sm-3 col-form-label">Confirm New Password</label>
+                  <div class="col-sm-9">
+                    <input type="password" class="form-control" name="new_password2" required />
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="offset-sm-3 col-sm-9">
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script>
+      $(function() {
+          $('.summernote').summernote({
+              height: 150
+          });
+          $('#avatar').change(function() {
+              var input = this;
+              if (input.files && input.files[0]) {
+                  var reader = new FileReader();
+                  reader.onload = function(e) {
+                      $('#avatar-preview').attr('src', e.target.result);
+                  };
+                  reader.readAsDataURL(input.files[0]);
+              }
+          });
+          $('.custom-file-input').on('change', function() {
+              var fileName = $(this).val().split('\\').pop();
+              $(this).next('.custom-file-label').addClass('selected').html(fileName);
+          });
+      });
+  </script>
+{% endblock %}

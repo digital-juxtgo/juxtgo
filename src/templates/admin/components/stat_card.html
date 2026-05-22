@@ -1,0 +1,17 @@
+<div class="card shadow-none border bg-gradient-start-1 h-100">
+    <div class="card-body p-20">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <p class="fw-medium text-primary-light mb-1">{{ title }}</p>
+                <h6 class="mb-0">{{ value }}</h6>
+            </div>
+            <div class="w-50-px h-50-px bg-{{ color }} rounded-circle d-flex justify-content-center align-items-center">
+                <iconify-icon icon="{{ icon }}" class="text-white text-2xl"></iconify-icon>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %} 
+how to use it in
+{% include "admin/components/stat_card.html" with title="Total Users" value=total_users color="cyan" icon="gridicons:multiple-users" %} {% endcomment %}

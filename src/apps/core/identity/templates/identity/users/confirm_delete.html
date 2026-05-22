@@ -1,0 +1,21 @@
+{% extends "admin/pages/form.html" %}
+
+{% block title %}Delete User | JuxtGo OS{% endblock %}
+
+{% block page_title %}Delete User{% endblock %}
+
+{% block back_url %}
+    {% url 'core:identity:user_list' %}
+{% endblock %}
+
+{% block form_content %}
+    <div class="text-center">
+        <p>
+            Are you sure you want to delete <strong>{{ object.email }}</strong>?
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        </form>
+    </div>
+{% endblock %}

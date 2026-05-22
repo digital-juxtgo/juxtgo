@@ -1,0 +1,97 @@
+{% extends "admin/pages/list.html" %}
+
+{% load static identity_filters %}
+
+{% block title %}{{ page_title }} | JuxtGo OS{% endblock %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block page_breadcrumbs %}<li class="breadcrumb-item active">{{ page_title }}</li>{% endblock %}
+
+{% block list_table_head %}
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Status</th>
+      <th>Role</th>
+      <th class="text-center">Action</th>
+    </tr>
+  </thead>
+{% endblock %}
+
+{% block list_table_body %}
+  {% for user in users %}
+    <tr>
+      <td>
+        <div class="d-flex align-items-center">
+          {% if user.avatar_url %}
+            <img src="{{ user.avatar_url }}" class="img-circle img-size-32 mr-2" style="width:32px;height:32px;object-fit:cover;" />
+          {% else %}
+            <img src="{% static 'adminlte/img/default-avatar.png' %}" class="img-circle img-size-32 mr-2" style="width:32px;height:32px;object-fit:cover;" />
+          {% endif %}
+          <div>
+            <span class="d-block">{{ user.full_name }}</span><small class="text-muted">{{ user.email }}</small>
+          </div>
+        </div>
+      </td>
+      <td>
+        {% if user.is_active %}
+          <span class="badge badge-success">Active</span>
+        {% else %}
+          <span class="badge badge-danger">Inactive</span>
+        {% endif %}
+      </td>
+      <td>
+        <select class="form-control form-control-sm select2" onchange="updateRole(this, '{{ user.id }}')">
+          <option value="">-- Select --</option>
+          {% for role in roles %}
+            <option value="{{ role.name }}" {% if user.role == role.display_name %}selected{% endif %}>
+              {{ role.display_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </td>
+      <td class="text-center">
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="user_id" value="{{ user.id }}" />
+          <button type="submit" name="action" value="toggle_active" class="btn btn-sm {% if user.is_active %}btn-outline-secondary{% else %}btn-outline-success{% endif %}">
+            {% if user.is_active %}
+              Deactivate
+            {% else %}
+              Activate
+            {% endif %}
+          </button>
+        </form>
+        <a href="{% url 'core:identity:user_edit' user.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+      </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="4" class="text-center">No users found.</td>
+    </tr>
+  {% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script>
+      $(function() {
+          $('.select2').select2({
+              theme: 'bootstrap4',
+              width: '100%'
+          });
+      });
+
+      function updateRole(select, userId) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '{% url "core:permissions:assign_role" %}';
+          form.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />' +
+              '<input type="hidden" name="user_id" value="' + userId + '" />' +
+              '<input type="hidden" name="role_name" value="' + select.value + '" />';
+          document.body.appendChild(form);
+          form.submit();
+      }
+  </script>
+{% endblock %}

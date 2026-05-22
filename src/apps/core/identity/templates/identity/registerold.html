@@ -1,0 +1,84 @@
+{% extends "admin/base/layout.html" %}
+
+{% load static %}
+
+{% block title %}
+
+    Register | JuxtGo OS
+{% endblock %}
+
+{% block page_title %}
+
+    Create Account
+{% endblock %}
+
+{% block content %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body p-24">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Email address
+                            </label>
+                            <input type="email"
+                                   name="email"
+                                   class="form-control {% if errors.email %}is-invalid{% endif %}"
+                                   value="{{ form.email|default:'' }}"
+                                   required />
+                            {% if errors.email %}
+                                <div class="invalid-feedback">
+                                    {{ errors.email }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    First Name
+                                </label>
+                                <input type="text"
+                                       name="first_name"
+                                       class="form-control"
+                                       value="{{ form.first_name|default:'' }}" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Last Name
+                                </label>
+                                <input type="text"
+                                       name="last_name"
+                                       class="form-control"
+                                       value="{{ form.last_name|default:'' }}" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Password
+                            </label>
+                            <input type="password"
+                                   name="password"
+                                   class="form-control {% if errors.password %}is-invalid{% endif %}"
+                                   required />
+                            {% if errors.password %}
+                                <div class="invalid-feedback">
+                                    {{ errors.password }}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Minimum 8 characters.</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            Register
+                        </button>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <a href="{% url 'core:identity:login' %}">Already have an account?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "admin/pages/list.html" %}
+{% load static identity_filters %}
+
+{% block title %}{{ page_title }} | JuxtGo OS{% endblock %}
+{% block page_title %}{{ page_title }}{% endblock %}
+{% block page_breadcrumbs %}<li class="breadcrumb-item active">{{ page_title }}</li>{% endblock %}
+{% block add_url %}{% endblock %}
+
+{% block list_table_head %}
+    <thead>
+        <tr>
+            <th style="width:10px">#</th>
+            <th>Username</th>
+            <th>Current Role</th>
+            <th class="text-center">Assign Role</th>
+        </tr>
+    </thead>
+{% endblock %}
+
+{% block list_table_body %}
+    {% for user in users %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    {% if user.avatar_url %}
+                        <img src="{{ user.avatar_url }}" class="img-circle img-size-32 mr-2" style="width:32px;height:32px;object-fit:cover;">
+                    {% else %}
+                        <img src="{% static 'adminlte/img/default-avatar.png' %}" class="img-circle img-size-32 mr-2" style="width:32px;height:32px;object-fit:cover;">
+                    {% endif %}
+                    <span>{{ user.full_name }}</span>
+                </div>
+            </td>
+            <td>
+                {% if user.role %}
+                    <span class="badge badge-primary">{{ user.role }}</span>
+                {% else %}
+                    <span class="badge badge-secondary">No Role</span>
+                {% endif %}
+            </td>
+            <td class="text-center">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">Assign Role</button>
+                    <div class="dropdown-menu">
+                        {% for role in roles %}
+                            <form method="post" action="{% url 'core:permissions:assign_role' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <input type="hidden" name="role_name" value="{{ role.name }}">
+                                <button type="submit" class="dropdown-item">{{ role.display_name }}</button>
+                            </form>
+                        {% endfor %}
+                    </div>
+                </div>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="4" class="text-center">No users found.</td></tr>
+    {% endfor %}
+{% endblock %}

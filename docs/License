@@ -1,0 +1,29 @@
+
+---
+
+## 3. Issue & Pull Request Templates
+
+Create `.github/ISSUE_TEMPLATE/bug_report.md`:
+
+```markdown
+---
+name: Bug report
+about: Create a report to help improve JuxtGo OS
+---
+
+**Describe the bug**
+A clear and concise description.
+
+**To Reproduce**
+Steps to reproduce the behavior.
+
+**Expected behavior**
+What you expected to happen.
+
+**Screenshots**
+If applicable.
+
+**Environment:**
+- OS: [e.g., Ubuntu 22.04]
+- Docker version:
+- Django version:

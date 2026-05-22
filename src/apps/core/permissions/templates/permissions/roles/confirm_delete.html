@@ -1,0 +1,16 @@
+{% extends "admin/pages/form.html" %}
+{% load static %}
+
+{% block title %}Delete Role | JuxtGo OS{% endblock %}
+{% block page_title %}Delete Role{% endblock %}
+{% block back_url %}{% url 'core:permissions:role_list' %}{% endblock %}
+
+{% block form_content %}
+    <div class="text-center">
+        <p>Are you sure you want to delete <strong>{{ object.display_name }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        </form>
+    </div>
+{% endblock %}

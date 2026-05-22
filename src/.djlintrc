@@ -1,0 +1,15 @@
+{
+  "profile": "django",
+  "max_attribute_length": 9999,
+  "indent": 4,
+  "preserve_blank_lines": false,
+  "ignore": "H014,H015,H016",
+  "blank_line_after_tag": "load,extends,endblock,include",
+  "blank_line_before_tag": "load,extends,block,include",
+  "indent_tags": "block,for,if,comment",
+  "wrap_attributes": false,
+  "line_break_after_multiline_tag": false,
+  "close_void_tags": true,
+  "format_css": true,
+  "format_js": true
+}

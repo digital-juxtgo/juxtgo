@@ -1,0 +1,57 @@
+{% extends "admin/pages/list.html" %}
+
+{% load static identity_filters %}
+
+{% block title %}{{ page_title }} | JuxtGo OS{% endblock %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block page_breadcrumbs %}<li class="breadcrumb-item active">User Management</li>{% endblock %}
+
+{% block list_table_head %}
+  <thead>
+    <tr>
+      <th style="width:10px">#</th>
+      <th>Joined</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Status</th>
+      <th class="text-center">Action</th>
+    </tr>
+  </thead>
+{% endblock %}
+
+{% block list_table_body %}
+  {% for user in users %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ user.date_joined }}</td>
+      <td>
+        <div class="d-flex align-items-center">
+          {% if user.avatar_url %}
+            <img src="{{ user.avatar_url }}" alt="" class="img-circle img-size-32 mr-2" style="width:32px;height:32px;object-fit:cover;" />
+          {% else %}
+            <img src="{% static 'adminlte/img/default-avatar.png' %}" class="img-circle img-size-32 mr-2" style="width:32px;height:32px;object-fit:cover;" />
+          {% endif %}
+          <span>{{ user.full_name }}</span>
+        </div>
+      </td>
+      <td>{{ user.email }}</td>
+      <td>
+        {% if user.is_active %}
+          <span class="badge badge-success">Active</span>
+        {% else %}
+          <span class="badge badge-secondary">Inactive</span>
+        {% endif %}
+      </td>
+      <td class="text-center">
+        <a href="{% url 'core:identity:user_edit' user.id %}" class="btn btn-sm btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></a>
+        <a href="{% url 'core:identity:user_delete' user.id %}" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fas fa-trash"></i></a>
+      </td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="6" class="text-center">No users found.</td>
+    </tr>
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "admin/base/layout.html" %}
+<!--
+  Page Layout – every content page should extend this, NOT base/layout.html directly.
+
+  Blocks you should override:
+    - title              → browser tab title (already suffixed with “| JuxtGo OS”)
+    - page_title         → the main <h1> shown in the content header
+    - page_breadcrumbs   → additional <li> breadcrumb items (the “Dashboard” item is already included)
+    - page_content       → the main body of the page (usually a card / table / form)
+    - extra_head         → extra CSS or meta tags
+    - extra_js           → extra JavaScript (loads after core JS)
+-->
+{% block title %}{{ page_title }} | JuxtGo OS{% endblock title %}
+
+{% block extra_head %}
+  {{ block.super }}
+{% endblock extra_head %}
+
+{% block breadcrumbs %}
+  {{ block.super }}
+  {% block page_breadcrumbs %}{% endblock page_breadcrumbs %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+  <div class="container-fluid">
+    {% block page_content %}{% endblock page_content %}
+  </div>
+{% endblock content %}
+
+{% block extra_js %}
+  {{ block.super }}
+{% endblock extra_js %}

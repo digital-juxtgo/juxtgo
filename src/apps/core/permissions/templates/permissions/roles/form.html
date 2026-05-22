@@ -1,0 +1,67 @@
+{% extends "admin/pages/form.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} | JuxtGo OS{% endblock %}
+{% block page_title %}{{ page_title }}{% endblock %}
+{% block back_url %}{% url 'core:permissions:role_list' %}{% endblock %}
+
+{% block form_content %}
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form %}
+            <div class="form-group">
+                <label>Role Name</label>
+                {{ form.name }}
+            </div>
+            <div class="form-group">
+                <label>Display Name</label>
+                {{ form.display_name }}
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                {{ form.description }}
+            </div>
+            <div class="form-group">
+                <label>Permissions</label>
+                <select class="duallistbox" multiple="multiple" name="permissions">
+                    {% for perm in form.permissions.field.queryset %}
+                        <option value="{{ perm.id }}" {% if perm.id in form.permissions.value %}selected{% endif %}>{{ perm.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% else %}
+            <div class="form-group">
+                <label>Role Name</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Display Name</label>
+                <input type="text" name="display_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control summernote"></textarea>
+            </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+        $(function() {
+            $('.duallistbox').bootstrapDualListbox({
+                nonSelectedListLabel: 'Available',
+                selectedListLabel: 'Assigned',
+                preserveSelectionOnMove: 'moved',
+                moveOnSelect: false,
+                infoText: 'Showing all {0}',
+                filterPlaceHolder: 'Filter',
+                moveAllLabel: 'Move all',
+                removeAllLabel: 'Remove all'
+            });
+            $('.summernote').summernote({ height: 150 });
+        });
+    </script>
+{% endblock %}

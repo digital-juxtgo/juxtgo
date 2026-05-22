@@ -1,0 +1,171 @@
+{% extends "admin/pages/form.html" %}
+
+{% load static identity_filters %}
+
+{% block title %}
+  {% if object %}
+    Edit User – {{ object.email }}
+  {% else %}
+    Add New User
+  {% endif %}
+  | JuxtGo OS
+{% endblock title %}
+
+{% block page_title %}
+  {% if object %}
+    Edit User: {{ object.email }}
+  {% else %}
+    Add New User
+  {% endif %}
+{% endblock page_title %}
+
+{% block page_breadcrumbs %}
+  <li class="breadcrumb-item">
+    <a href="{% url 'core:identity:user_list' %}">User Management</a>
+  </li>
+  <li class="breadcrumb-item active">
+    {% if object %}
+      Edit
+    {% else %}
+      Add New
+    {% endif %}
+  </li>
+{% endblock page_breadcrumbs %}
+
+{# The back button is rendered automatically by form.html when back_url is set. #}
+
+{% block form_content %}
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div class="row">
+      <!-- Left column: form fields -->
+      <div class="col-md-8">
+        <!-- Email -->
+        <div class="form-group">
+          <label for="id_email">
+            Email Address <span class="text-danger">*</span>
+          </label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            </div>
+            <input type="email" name="email" id="id_email" class="form-control {% if errors.email %}is-invalid{% endif %}" value="{{ object.email|default:'' }}" placeholder="Enter email address" {% if object %}disabled{% endif %} required />
+            {% if errors.email %}<div class="invalid-feedback d-block">{{ errors.email }}</div>{% endif %}
+          </div>
+          {% if object %}<small class="form-text text-muted">Email cannot be changed.</small>{% endif %}
+        </div>
+        <!-- Password (only when creating) -->
+        {% if not object %}
+          <div class="form-group">
+            <label for="id_password">
+              Password <span class="text-danger">*</span>
+            </label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+              </div>
+              <input type="password" name="password" id="id_password" class="form-control {% if errors.password %}is-invalid{% endif %}" placeholder="Enter password" required />
+              {% if errors.password %}<div class="invalid-feedback d-block">{{ errors.password }}</div>{% endif %}
+            </div>
+            <small class="form-text text-muted">Minimum 8 characters.</small>
+          </div>
+        {% endif %}
+        <!-- First & Last Name -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="id_first_name">First Name</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                </div>
+                <input type="text" name="first_name" id="id_first_name" class="form-control" value="{{ profile.first_name|default:'' }}" placeholder="Enter first name" />
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="id_last_name">Last Name</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                </div>
+                <input type="text" name="last_name" id="id_last_name" class="form-control" value="{{ profile.last_name|default:'' }}" placeholder="Enter last name" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Bio -->
+        <div class="form-group">
+          <label for="id_bio">Bio</label>
+          <textarea name="bio" id="id_bio" class="form-control summernote" rows="4" placeholder="Write a short bio...">{{ profile.bio|default:'' }}</textarea>
+        </div>
+      </div>
+      <!-- Right column: Avatar & extra actions -->
+      <div class="col-md-4">
+        <!-- Avatar card -->
+        <div class="card card-outline card-primary">
+          <div class="card-header">
+            <h3 class="card-title">Avatar</h3>
+          </div>
+          <div class="card-body text-center">
+            <img id="avatar-preview" src="{% if object %}{{ object|avatar_url }}{% else %}{% static 'adminlte/img/default-avatar.png' %}{% endif %}" alt="Avatar" class="img-fluid img-circle elevation-2 mb-3" style="width: 150px; height: 150px; object-fit: cover;" />
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="avatarUpload" name="avatar" accept="image/*" />
+              <label class="custom-file-label" for="avatarUpload">Choose image</label>
+            </div>
+            <small class="text-muted">Max 2 MB. JPG, PNG, GIF.</small>
+          </div>
+        </div>
+        {% if object %}
+          <div class="mt-3">
+            <a href="{% url 'core:permissions:user_role_permission' %}" class="btn btn-outline-info btn-block">
+              <i class="fas fa-user-shield mr-1"></i> Permissions
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <!-- Submit button (still inside the form) -->
+    <div class="text-right mt-3">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save mr-1"></i>
+        {% if object %}
+          Update User
+        {% else %}
+          Create User
+        {% endif %}
+      </button>
+    </div>
+  </form>
+{% endblock form_content %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script>
+      $(function() {
+          // Summernote
+          $('.summernote').summernote({
+              height: 150,
+              toolbar: [
+                  ['style', ['bold', 'italic', 'underline', 'clear']],
+                  ['para', ['ul', 'ol', 'paragraph']]
+              ]
+          });
+
+          // Avatar preview
+          $('#avatarUpload').on('change', function() {
+              var input = this;
+              if (input.files && input.files[0]) {
+                  var reader = new FileReader();
+                  reader.onload = function(e) {
+                      $('#avatar-preview').attr('src', e.target.result);
+                  };
+                  reader.readAsDataURL(input.files[0]);
+              }
+              var fileName = $(this).val().split('\\').pop();
+              $(this).next('.custom-file-label').addClass('selected').html(fileName);
+          });
+      });
+  </script>
+{% endblock extra_js %}
