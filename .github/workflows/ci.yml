@@ -44,7 +44,7 @@ jobs:
       # 4. Run database migrations
       - name: Run migrations
         env:
-          SECRET_KEY: test-secret-key
+          SECRET_KEY: SECRET_KEY = config("DJANGO_SECRET_KEY")
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/juxtgo_test
         run: |
           python src/manage.py migrate
@@ -52,7 +52,7 @@ jobs:
       # 5. Run tests (placeholder – you’ll add real tests later)
       - name: Run tests
         env:
-          SECRET_KEY: test-secret-key
+          SECRET_KEY: SECRET_KEY = config("DJANGO_SECRET_KEY")
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/juxtgo_test
         run: |
           python src/manage.py test apps/
