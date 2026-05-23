@@ -1,68 +1,108 @@
+# ============================================================================
+# JuxtGo OS – CI/CD Pipeline
+# ============================================================================
+# This workflow runs on every push to main or develop, and on every pull
+# request targeting main.  It:
+#   1. Spins up a temporary PostgreSQL database
+#   2. Checks out the code
+#   3. Installs Python dependencies
+#   4. Applies database migrations
+#   5. Runs the full test suite (all apps)
+#   6. Builds the Docker image (verifies the Dockerfile is correct)
+#
+# If any step fails, merging is blocked – protecting your production code.
+# ============================================================================
+
 name: JuxtGo CI/CD
 
+# --------------------------------------------------------------------------
+# When to run the workflow
+# --------------------------------------------------------------------------
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop] # every push to these branches
   pull_request:
-    branches: [main]
+    branches: [main] # every PR opened against main
 
+# --------------------------------------------------------------------------
+# The actual jobs to execute
+# --------------------------------------------------------------------------
 jobs:
   test-and-build:
+    # Use the latest Ubuntu runner provided by GitHub
     runs-on: ubuntu-latest
+
+    # ----------------------------------------------------------------------
+    # Services – temporary containers that run alongside the job
+    # ----------------------------------------------------------------------
     services:
       postgres:
-        image: postgres:15
+        image: postgres:15 # same version as your local Docker Compose
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: juxtgo_test
+          POSTGRES_DB: juxtgo_test # temporary database for tests
         ports:
           - 5432:5432
+        # Wait for PostgreSQL to accept connections before starting the job
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
+    # ----------------------------------------------------------------------
+    # Steps – executed in order
+    # ----------------------------------------------------------------------
     steps:
-      # 1. Checkout code
+      # 1. Clone the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Set up Python
+      # 2. Install Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.11" # matches your Docker image
 
-      # 3. Install dependencies
+      # 3. Install all Python packages
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Run database migrations
+      # 4. Apply database migrations
+      #    Provide DJANGO_SECRET_KEY (needed by Django) and DATABASE_URL
+      #    (used by dj‑database‑url in your base settings) to connect to the
+      #    temporary PostgreSQL service.
       - name: Run migrations
         env:
-          SECRET_KEY: SECRET_KEY = config("DJANGO_SECRET_KEY")
+          DJANGO_SECRET_KEY: test-secret-key # dummy key – safe for CI
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/juxtgo_test
         run: |
           python src/manage.py migrate
 
-      # 5. Run tests (placeholder – you’ll add real tests later)
+      # 5. Run all tests
+      #    `python src/manage.py test` automatically discovers tests in every
+      #    installed app that has a tests module.
       - name: Run tests
         env:
-          SECRET_KEY: SECRET_KEY = config("DJANGO_SECRET_KEY")
+          DJANGO_SECRET_KEY: test-secret-key
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/juxtgo_test
         run: |
-          python src/manage.py test apps
+          python src/manage.py test
 
-      # 6. Build Docker image
+      # 6. Build the Docker image
+      #    This ensures your Dockerfile is always valid and the image can be
+      #    built without errors.
       - name: Build Docker image
         run: docker build -t juxtgo:latest -f docker/web/Dockerfile .
 
-      # 7. (Optional) Push image to Docker Hub on tags
-      # Uncomment and set secrets DOCKER_USERNAME and DOCKER_PASSWORD in your GitHub repo
+      # ====================================================================
+      # OPTIONAL: Push image to Docker Hub on version tags
+      # Uncomment the two steps below and set the repository secrets
+      #   DOCKER_USERNAME and DOCKER_PASSWORD in your GitHub repo.
+      # ====================================================================
       # - name: Login to Docker Hub
       #   if: startsWith(github.ref, 'refs/tags/')
       #   uses: docker/login-action@v2
