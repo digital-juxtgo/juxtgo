@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
-from apps.shared.views.base import BaseListView, BaseCreateView, BaseUpdateView
+from apps.core.shared.views.base import BaseListView, BaseCreateView, BaseUpdateView
 from apps.core.identity.selectors import UserSelector
 from apps.core.identity.services import UserService
 from ..services.role_service import RoleService

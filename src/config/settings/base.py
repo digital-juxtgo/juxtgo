@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     # JuxtGo OS internal apps
     "apps.core.identity",
     "apps.core.permissions",
+    "apps.core.organizations",
 ]
 
 # ------------------------------------------------------------------------------

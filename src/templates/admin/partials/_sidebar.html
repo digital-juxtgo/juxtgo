@@ -83,6 +83,32 @@
             </ul>
           </li>
         {% endif %}
+        <!-- Organizations -->
+        {% if user.is_authenticated %}
+          <li class="nav-item has-treeview {% if active_menu == 'organizations' %}menu-open{% endif %}">
+            <a href="#" class="nav-link {% if active_menu == 'organizations' %}active{% endif %}">
+              <i class="nav-icon fas fa-building"></i>
+              <p>
+                Organizations
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'core:organizations:list' %}" class="nav-link {% if request.resolver_match.url_name == 'list' and 'organizations' in request.resolver_match.namespaces %}active{% endif %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>All Organizations</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'core:organizations:create' %}" class="nav-link {% if request.resolver_match.url_name == 'create' and 'organizations' in request.resolver_match.namespaces %}active{% endif %}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Create Organization</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+        {% endif %}
         <!-- My Profile -->
         <li class="nav-item">
           <a href="{% url 'core:identity:profile' %}" class="nav-link {% if active_item == 'profile' %}active{% endif %}">

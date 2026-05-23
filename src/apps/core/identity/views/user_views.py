@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from apps.shared.views.base import BaseListView, BaseCreateView, BaseUpdateView
+from apps.core.shared.views.base import BaseListView, BaseCreateView, BaseUpdateView
 from apps.core.identity.selectors.user_selector import UserSelector
 from apps.core.identity.services.user_service import UserService
 from apps.core.permissions.mixins import RoleRequiredMixin

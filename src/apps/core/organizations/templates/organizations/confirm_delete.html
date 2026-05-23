@@ -1,0 +1,46 @@
+{% extends "admin/pages/form.html" %}
+
+{% load static %}
+
+{% block title %}
+    Delete Organization | JuxtGo OS
+{% endblock title %}
+
+{% block page_title %}
+    Delete Organization
+{% endblock page_title %}
+
+{% block back_url %}
+    {% url 'core:organizations:list' %}
+{% endblock back_url %}
+
+{% block form_content %}
+    <div class="card card-outline card-danger">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-exclamation-triangle mr-1"></i>
+                Delete Organization
+            </h3>
+        </div>
+        <div class="card-body">
+            <p>
+                Are you sure you want to delete <strong>{{ object.name }}</strong>?
+            </p>
+            <p class="text-danger">
+                <i class="fas fa-warning"></i>
+                This will permanently delete the organization and all its data. This action cannot be undone.
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'core:organizations:list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left mr-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash mr-1"></i> Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock form_content %}
