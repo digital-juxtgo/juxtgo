@@ -39,6 +39,11 @@ URL_MAP = {
         "",
         "profile",
     ),  # optional: can keep profile active on password page
+    # Organizations
+    "organization_list": {"menu": "organizations", "icon": "fas fa-building"},
+    "organization_create": {"menu": "organizations", "icon": "fas fa-plus"},
+    "organization_edit": {"menu": "organizations", "icon": "fas fa-edit"},
+    "organization_delete": {"menu": "organizations", "icon": "fas fa-trash"},
 }
 
 

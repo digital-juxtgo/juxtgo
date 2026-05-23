@@ -14,7 +14,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # ------------------------------------------------------------------------------
 # Core Django Settings
 # ------------------------------------------------------------------------------
-SECRET_KEY = config("DJANGO_SECRET_KEY")
+SECRET_KEY = config(
+    "DJANGO_SECRET_KEY", default="django-insecure-fallback-key-for-dev-only"
+)
 DEBUG = False  # Overridden in development.py
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", cast=Csv())
 
@@ -58,6 +60,7 @@ INSTALLED_APPS = [
     # JuxtGo OS internal apps
     "apps.core.identity",
     "apps.core.permissions",
+    "apps.core.organizations",
 ]
 
 # ------------------------------------------------------------------------------

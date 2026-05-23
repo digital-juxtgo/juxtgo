@@ -1,0 +1,63 @@
+{% extends "admin/pages/list.html" %}
+
+{% load static %}
+
+{% block title %}
+    {{ page_title }} | JuxtGo OS
+{% endblock title %}
+
+{% block page_title %}
+    {{ page_title }}
+{% endblock page_title %}
+
+{% block page_breadcrumbs %}
+    <li class="breadcrumb-item active">Organizations</li>
+{% endblock page_breadcrumbs %}
+
+{% block list_table_head %}
+    <thead>
+        <tr>
+            <th style="width:10px">#</th>
+            <th>Name</th>
+            <th>Slug</th>
+            <th>Status</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+{% endblock list_table_head %}
+
+{% block list_table_body %}
+    {% for org in organizations %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ org.name }}</td>
+            <td>{{ org.slug }}</td>
+            <td>
+                {% if org.is_active %}
+                    <span class="badge badge-success">Active</span>
+                {% else %}
+                    <span class="badge badge-secondary">Inactive</span>
+                {% endif %}
+            </td>
+            <td class="text-center">
+                <form method="post" action="{% url 'core:organizations:switch' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="organization_id" value="{{ org.id }}" />
+                    <button type="submit" class="btn btn-sm btn-outline-primary" title="Switch to this organization">
+                        <i class="fas fa-sign-in-alt"></i> Switch
+                    </button>
+                </form>
+                <a href="{% url 'core:organizations:edit' org.id %}" class="btn btn-sm btn-outline-success" title="Edit organization">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'core:organizations:delete' org.id %}" class="btn btn-sm btn-outline-danger" title="Delete organization">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">No organizations yet.</td>
+        </tr>
+    {% endfor %}
+{% endblock list_table_body %}

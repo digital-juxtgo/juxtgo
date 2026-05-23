@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
-from apps.shared.models import BaseModel
+from apps.core.shared.models import BaseModel
 from .managers import UserManager
 
 

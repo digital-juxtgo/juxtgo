@@ -10,16 +10,19 @@ def generate_slug(name: str) -> str:
     return slugify(name)
 
 
-def generate_unique_slug(model_class, name: str, slug_field: str = "slug") -> str:
-    """
-    Generate a unique slug for a model by appending a number if it already exists.
-    """
-    base_slug = generate_slug(name)
+def generate_unique_slug(model_class, name, slug_field="slug", instance=None):
+    base_slug = slugify(name)
     slug = base_slug
     num = 1
-    while model_class.objects.filter(**{slug_field: slug}).exists():
+    qs = model_class.objects.filter(**{slug_field: slug})
+    if instance:
+        qs = qs.exclude(pk=instance.pk)
+    while qs.exists():
         slug = f"{base_slug}-{num}"
         num += 1
+        qs = model_class.objects.filter(**{slug_field: slug})
+        if instance:
+            qs = qs.exclude(pk=instance.pk)
     return slug
 
 

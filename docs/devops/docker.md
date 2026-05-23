@@ -397,3 +397,14 @@ CMD ["gunicorn", "juxtgo.wsgi:application", "--bind", "0.0.0.0:8000", "--workers
 
 **Document maintainer:** DevOps Lead / Platform Engineer  
 **Review cycle:** After any infrastructure change or quarterly.
+
+## Adding a New Core App
+
+When you create a new app (e.g., `organizations`), you must:
+
+1. Add it to `INSTALLED_APPS` in `config/settings/base.py`
+2. Rebuild the Docker image:
+   ```bash
+   docker compose down
+   docker compose up -d --build
+   ```

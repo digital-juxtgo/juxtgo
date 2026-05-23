@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group
 from django.db import models
-from apps.shared.models import BaseModel
+from apps.core.shared.models import BaseModel
 
 
 class Role(BaseModel):
