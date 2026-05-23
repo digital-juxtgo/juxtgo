@@ -55,7 +55,7 @@ jobs:
           SECRET_KEY: SECRET_KEY = config("DJANGO_SECRET_KEY")
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/juxtgo_test
         run: |
-          python src/manage.py test apps/
+          python src/manage.py test
 
       # 6. Build Docker image
       - name: Build Docker image
