@@ -1,0 +1,55 @@
+# ==============================
+# Stage 1: Builder – compiles dependencies
+# ==============================
+FROM python:3.11-slim AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /wheels
+COPY requirements.txt .
+RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+
+# ==============================
+# Stage 2: Final – run the app
+# ==============================
+FROM python:3.11-slim
+
+# Create a non-root user (like your current Dockerfile)
+ARG UID=1000
+ARG GID=1000
+ARG APP_USER=hadi
+RUN groupadd -g ${GID} ${APP_USER} && \
+    useradd -m -u ${UID} -g ${GID} -s /bin/bash ${APP_USER}
+
+# Install only runtime libraries (no gcc)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev curl && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy pre-built wheels and install them
+COPY --from=builder /wheels /wheels
+RUN pip install --no-cache /wheels/* && rm -rf /wheels
+
+# Copy application code
+COPY src/ .
+
+# Copy the production entrypoint script
+COPY infra/scripts/entrypoint.prod.sh /entrypoint.prod.sh
+RUN chmod +x /entrypoint.prod.sh
+
+# Switch to non-root user
+RUN chown -R ${UID}:${GID} /app /entrypoint.prod.sh
+USER ${APP_USER}
+
+# Collect static files (they'll be served by Nginx via a volume)
+RUN python manage.py collectstatic --noinput
+
+EXPOSE 8000
+
+# Run the entrypoint script
+ENTRYPOINT ["/entrypoint.prod.sh"]
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers=3", "--access-logfile", "-", "--error-logfile", "-"]
