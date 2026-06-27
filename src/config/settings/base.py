@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     "apps.core.identity",
     "apps.core.permissions",
     "apps.core.organizations",
+    "apps.core.tenancy",
+    "apps.core.crm",
 ]
 
 # ------------------------------------------------------------------------------
