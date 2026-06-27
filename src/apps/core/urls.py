@@ -7,6 +7,7 @@ urlpatterns = [
     path("identity/", include("apps.core.identity.urls")),
     path("permissions/", include("apps.core.permissions.urls")),
     path("organizations/", include("apps.core.organizations.urls")),
+    path("crm/", include("apps.core.crm.urls")),
     # health check endpoint
     path("health/", health_check, name="health"),
 ]

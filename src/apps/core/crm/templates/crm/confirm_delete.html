@@ -1,0 +1,35 @@
+{% extends "admin/pages/form.html" %}
+{% load static %}
+
+{% block title %}Delete | JuxtGo OS{% endblock title %}
+{% block page_title %}Delete{% endblock page_title %}
+{% block back_url %}{{ back_url }}{% endblock back_url %}
+
+{% block form_content %}
+  <div class="card card-outline card-danger">
+    <div class="card-header">
+      <h3 class="card-title">
+        <i class="fas fa-exclamation-triangle mr-1"></i>
+        Confirm Deletion
+      </h3>
+    </div>
+    <div class="card-body">
+      <p>Are you sure you want to delete <strong>{{ object.name|default:object.title|default:object.full_name }}</strong>?</p>
+      <p class="text-danger">
+        <i class="fas fa-warning"></i>
+        This action cannot be undone.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-between">
+          <a href="{{ back_url }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left mr-1"></i> Cancel
+          </a>
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash mr-1"></i> Delete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock form_content %}

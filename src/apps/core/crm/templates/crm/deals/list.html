@@ -1,0 +1,47 @@
+{% extends "admin/pages/list.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} | JuxtGo OS{% endblock title %}
+{% block page_title %}{{ page_title }}{% endblock page_title %}
+{% block page_breadcrumbs %}<li class="breadcrumb-item active">{{ page_title }}</li>{% endblock page_breadcrumbs %}
+
+{% block list_table_head %}
+  <thead>
+    <tr>
+      <th style="width:10px">#</th>
+      <th>Title</th>
+      <th>Pipeline</th>
+      <th>Stage</th>
+      <th>Contact</th>
+      <th>Company</th>
+      <th>Amount</th>
+      <th>Close Date</th>
+      <th class="text-center">Action</th>
+    </tr>
+  </thead>
+{% endblock list_table_head %}
+
+{% block list_table_body %}
+  {% for deal in deals %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ deal.title }}</td>
+      <td>{{ deal.pipeline_name }}</td>
+      <td><span class="badge badge-info">{{ deal.stage }}</span></td>
+      <td>{{ deal.contact_name|default:"—" }}</td>
+      <td>{{ deal.company_name|default:"—" }}</td>
+      <td>{{ deal.amount|default:"—" }}</td>
+      <td>{{ deal.expected_close_date|default:"—" }}</td>
+      <td class="text-center">
+        <a href="{% url 'core:crm:deal_edit' deal.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+          <i class="fas fa-edit"></i>
+        </a>
+        <a href="{% url 'core:crm:deal_delete' deal.id %}" class="btn btn-sm btn-outline-danger" title="Delete">
+          <i class="fas fa-trash"></i>
+        </a>
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="9" class="text-center">No deals found.</td></tr>
+  {% endfor %}
+{% endblock list_table_body %}
